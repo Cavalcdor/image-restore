@@ -3,14 +3,6 @@ import cv2
 
 
 def noise_mask_image(img, noise_ratio=[0.8, 0.4, 0.6]):
-    """
-    根据题目要求生成受损图片
-    :param img: cv2 读取图片,而且通道数顺序为 RGB
-    :param noise_ratio: 噪声比率，类型是 List,，内容:[r 上的噪声比率,g 上的噪声比率,b 上的噪声比率]
-                        默认值分别是 [0.8,0.4,0.6]
-    :return: noise_img 受损图片, 图像矩阵值 0-1 之间，数据类型为 np.array,
-             数据类型对象 (dtype): np.double, 图像形状:(height,width,channel),通道(channel) 顺序为RGB
-    """
     img = np.asarray(img, dtype=np.double)
     if img.ndim == 2:
         work_img = img[:, :, np.newaxis]
@@ -46,27 +38,14 @@ def noise_mask_image(img, noise_ratio=[0.8, 0.4, 0.6]):
     noise_img = work_img * mask
     if squeeze_channel:
         noise_img = noise_img[:, :, 0]
-
     return noise_img.astype(np.double)
 
 
 def get_noise_mask(noise_img):
-    """
-    获取噪声图像，一般为 np.array
-    :param noise_img: 带有噪声的图片
-    :return: 噪声图像矩阵
-    """
     return np.array(noise_img != 0, dtype="double")
 
 
 def restore_image(noise_img, size=4):
-    """
-    使用 你最擅长的算法模型 进行图像恢复。
-    :param noise_img: 一个受损的图像
-    :param size: 输入区域半径，长宽是以 size*size 方形区域获取区域, 默认是 4
-    :return: res_img 恢复后的图片，图像矩阵值 0-1 之间，数据类型为 np.array,
-            数据类型对象 (dtype): np.double, 图像形状:(height,width,channel), 通道(channel) 顺序为RGB
-    """
     arr = np.asarray(noise_img, dtype=np.double)
     if arr.ndim == 2:
         work_img = arr[:, :, np.newaxis]
@@ -77,11 +56,11 @@ def restore_image(noise_img, size=4):
     else:
         raise ValueError("noise_img must be a 2-D or 3-D image array")
 
-    res_img = np.copy(work_img)
     height, width, channels = work_img.shape
     radius = max(1, int(size))
     radii = [radius, max(radius * 2, radius + 1), max(radius * 4, radius + 2)]
-    yy, xx = np.mgrid[0:height, 0:width].astype(np.double)
+    eps = 1e-12
+    kernel_cache = {}
 
     def _box_sum(values, r):
         kernel_size = (2 * int(r) + 1, 2 * int(r) + 1)
@@ -93,99 +72,148 @@ def restore_image(noise_img, size=4):
             borderType=cv2.BORDER_REFLECT,
         )
 
-    for channel in range(channels):
-        plane = work_img[:, :, channel]
-        missing = plane <= 1e-12
+    def _quadratic_feature_kernels(r):
+        r = int(r)
+        if r in kernel_cache:
+            return kernel_cache[r]
+        coords = np.arange(-r, r + 1, dtype=np.double)
+        dx, dy = np.meshgrid(coords / max(r, 1), coords / max(r, 1))
+        sigma = 0.55
+        weight = np.exp(-(dx * dx + dy * dy) / (2.0 * sigma * sigma))
+        features = [dx, dy, dx * dx, dy * dy, dx * dy, np.ones_like(dx)]
+        kernel_cache[r] = (weight, features)
+        return kernel_cache[r]
+
+    def _weighted_sum(values, kernel):
+        return cv2.filter2D(
+            values.astype(np.double),
+            ddepth=-1,
+            kernel=kernel.astype(np.double),
+            borderType=cv2.BORDER_REFLECT,
+        )
+
+    def _restore_plane(plane, missing, mode):
+        plane = np.asarray(plane, dtype=np.double)
+        missing = np.asarray(missing, dtype=bool)
         if not np.any(missing):
-            continue
+            return np.clip(plane, 0.0, 1.0).astype(np.double)
 
         known = ~missing
-        global_mean = float(np.mean(plane[known])) if np.any(known) else 0.0
+        global_mean = float(np.mean(plane[known])) if np.any(known) else 0.5
 
-        mask8 = (missing.astype(np.uint8) * 255)
-        plane8 = np.clip(plane * 255.0, 0, 255).astype(np.uint8)
+        plane_for_inpaint = np.where(known, plane, 0.0)
+        mask8 = missing.astype(np.uint8) * 255
+        plane8 = np.clip(plane_for_inpaint * 255.0, 0, 255).astype(np.uint8)
         inpaint = cv2.inpaint(plane8, mask8, 3, cv2.INPAINT_TELEA).astype(np.double) / 255.0
 
         known_f = known.astype(np.double)
         value_f = np.where(known, plane, 0.0)
-        small_count = _box_sum(known_f, radii[0])
-        small_sum = _box_sum(value_f, radii[0])
-        large_count = _box_sum(known_f, radii[-1])
-        large_sum = _box_sum(value_f, radii[-1])
+        small_weight, _ = _quadratic_feature_kernels(radii[0])
+        large_weight, _ = _quadratic_feature_kernels(radii[-1])
+        small_count = _weighted_sum(known_f, small_weight)
+        small_sum = _weighted_sum(value_f, small_weight)
+        large_count = _weighted_sum(known_f, large_weight)
+        large_sum = _weighted_sum(value_f, large_weight)
+
         local_mean = np.full_like(plane, global_mean, dtype=np.double)
-        local_mean = np.where(large_count > 0, large_sum / np.maximum(large_count, 1.0), local_mean)
-        local_mean = np.where(small_count > 0, small_sum / np.maximum(small_count, 1.0), local_mean)
+        local_mean = np.where(large_count > 1e-12, large_sum / np.maximum(large_count, 1e-12), local_mean)
+        local_mean = np.where(small_count > 1e-12, small_sum / np.maximum(small_count, 1e-12), local_mean)
 
         regression = np.copy(local_mean)
         fitted = np.zeros_like(missing, dtype=bool)
-        weighted_x = known_f * xx
-        weighted_y = known_f * yy
-        weighted_xx = known_f * xx * xx
-        weighted_yy = known_f * yy * yy
-        weighted_xy = known_f * xx * yy
-        weighted_zx = value_f * xx
-        weighted_zy = value_f * yy
+        min_samples = 8 if mode != "chroma" else 10
 
-        for r in radii:
-            n = _box_sum(known_f, r)
-            target = missing & (~fitted) & (n >= 4)
+        for radius_index, r in enumerate(radii):
+            raw_count = _box_sum(known_f, r)
+            target = missing & (~fitted) & (radius_index == 0) & (raw_count >= min_samples)
+            if radius_index > 0:
+                target = missing & (~fitted) & (raw_count >= min_samples)
             coords = np.argwhere(target)
             if coords.size == 0:
                 continue
 
-            sx = _box_sum(weighted_x, r)
-            sy = _box_sum(weighted_y, r)
-            sxx = _box_sum(weighted_xx, r)
-            syy = _box_sum(weighted_yy, r)
-            sxy = _box_sum(weighted_xy, r)
-            sz = _box_sum(value_f, r)
-            sxz = _box_sum(weighted_zx, r)
-            syz = _box_sum(weighted_zy, r)
+            weight, features = _quadratic_feature_kernels(r)
+            weighted_count = _weighted_sum(known_f, weight)
+            rhs_maps = [_weighted_sum(value_f, weight * feature) for feature in features]
 
-            chunk = 100000
+            mat_maps = []
+            for i in range(6):
+                row = []
+                for j in range(6):
+                    row.append(_weighted_sum(known_f, weight * features[i] * features[j]))
+                mat_maps.append(row)
+
+            chunk = 40000
             for start in range(0, len(coords), chunk):
                 part = coords[start:start + chunk]
                 ii = part[:, 0]
                 jj = part[:, 1]
-                nn = n[ii, jj]
-                x0 = jj.astype(np.double)
-                y0 = ii.astype(np.double)
 
-                sx_c = sx[ii, jj] - x0 * nn
-                sy_c = sy[ii, jj] - y0 * nn
-                sxx_c = sxx[ii, jj] - 2 * x0 * sx[ii, jj] + x0 * x0 * nn
-                syy_c = syy[ii, jj] - 2 * y0 * sy[ii, jj] + y0 * y0 * nn
-                sxy_c = sxy[ii, jj] - x0 * sy[ii, jj] - y0 * sx[ii, jj] + x0 * y0 * nn
-                sxz_c = sxz[ii, jj] - x0 * sz[ii, jj]
-                syz_c = syz[ii, jj] - y0 * sz[ii, jj]
+                mat = np.empty((len(part), 6, 6), dtype=np.double)
+                rhs = np.empty((len(part), 6), dtype=np.double)
+                for i in range(6):
+                    rhs[:, i] = rhs_maps[i][ii, jj]
+                    for j in range(6):
+                        mat[:, i, j] = mat_maps[i][j][ii, jj]
 
-                lam = 1e-3 * np.maximum(nn, 1.0)
-                mat = np.zeros((len(part), 3, 3), dtype=np.double)
-                rhs = np.zeros((len(part), 3), dtype=np.double)
-                mat[:, 0, 0] = sxx_c + lam
-                mat[:, 0, 1] = sxy_c
-                mat[:, 0, 2] = sx_c
-                mat[:, 1, 0] = sxy_c
-                mat[:, 1, 1] = syy_c + lam
-                mat[:, 1, 2] = sy_c
-                mat[:, 2, 0] = sx_c
-                mat[:, 2, 1] = sy_c
-                mat[:, 2, 2] = nn + lam * 1e-3
-                rhs[:, 0] = sxz_c
-                rhs[:, 1] = syz_c
-                rhs[:, 2] = sz[ii, jj]
+                lam_scale = 2e-3 if mode == "chroma" else 1e-3
+                lam = lam_scale * np.maximum(weighted_count[ii, jj], 1.0)
+                diag = np.arange(6)
+                mat[:, diag, diag] += lam[:, np.newaxis]
+                mat[:, 5, 5] -= lam * 0.999
 
-                pred = np.einsum("nij,nj->ni", np.linalg.inv(mat), rhs)[:, 2]
+                pred = np.einsum("nij,nj->ni", np.linalg.inv(mat), rhs)[:, 5]
                 regression[ii, jj] = np.clip(pred, 0.0, 1.0)
                 fitted[ii, jj] = True
 
-        fused = 0.55 * inpaint + 0.35 * regression + 0.10 * local_mean
-        restored_plane = np.copy(plane)
-        restored_plane[missing] = fused[missing]
-        res_img[:, :, channel] = restored_plane
+        regression = np.where(fitted, regression, local_mean)
+        if mode == "y":
+            fused = 0.25 * inpaint + 0.65 * regression + 0.10 * local_mean
+        elif mode == "chroma":
+            fused = 0.20 * inpaint + 0.35 * regression + 0.45 * local_mean
+        else:
+            fused = 0.35 * inpaint + 0.55 * regression + 0.10 * local_mean
 
-    res_img = np.clip(res_img, 0.0, 1.0).astype(np.double)
-    if squeeze_channel:
-        res_img = res_img[:, :, 0]
+        restored = np.copy(plane)
+        restored[missing] = fused[missing]
+        return np.clip(restored, 0.0, 1.0).astype(np.double)
 
-    return res_img
+    missing_rgb = work_img <= eps
+    rgb_direct = np.copy(work_img)
+
+    if channels == 1:
+        out = _restore_plane(work_img[:, :, 0], missing_rgb[:, :, 0], "rgb")
+        return out if squeeze_channel else out[:, :, np.newaxis]
+
+    for channel in range(channels):
+        plane = work_img[:, :, channel]
+        missing = missing_rgb[:, :, channel]
+        if np.any(missing):
+            rgb_direct[:, :, channel] = _restore_plane(plane, missing, "rgb")
+
+    if channels < 3:
+        return np.clip(rgb_direct, 0.0, 1.0).astype(np.double)
+
+    rgb3 = np.clip(rgb_direct[:, :, :3], 0.0, 1.0)
+    ycc_seed = cv2.cvtColor(rgb3.astype(np.float32), cv2.COLOR_RGB2YCrCb).astype(np.double)
+
+    complete_known = np.all(~missing_rgb[:, :, :3], axis=2)
+    ycc_known_src = cv2.cvtColor(np.clip(work_img[:, :, :3], 0.0, 1.0).astype(np.float32), cv2.COLOR_RGB2YCrCb).astype(np.double)
+    ycc_work = np.copy(ycc_seed)
+    ycc_work[complete_known] = ycc_known_src[complete_known]
+
+    ycc_restored = np.empty_like(ycc_work)
+    ycc_restored[:, :, 0] = _restore_plane(ycc_work[:, :, 0], ~complete_known, "y")
+    ycc_restored[:, :, 1] = _restore_plane(ycc_work[:, :, 1], ~complete_known, "chroma")
+    ycc_restored[:, :, 2] = _restore_plane(ycc_work[:, :, 2], ~complete_known, "chroma")
+
+    direct_ycc = cv2.cvtColor(np.clip(rgb_direct[:, :, :3], 0.0, 1.0).astype(np.float32), cv2.COLOR_RGB2YCrCb).astype(np.double)
+    mixed_ycc = np.copy(direct_ycc)
+    mixed_ycc[:, :, 1] = ycc_restored[:, :, 1]
+    mixed_ycc[:, :, 2] = ycc_restored[:, :, 2]
+    rgb_mixed = cv2.cvtColor(np.clip(mixed_ycc, 0.0, 1.0).astype(np.float32), cv2.COLOR_YCrCb2RGB).astype(np.double)
+
+    res_img = np.copy(rgb_direct)
+    res_img[:, :, :3] = np.clip(rgb_mixed, 0.0, 1.0)
+    res_img[~missing_rgb] = work_img[~missing_rgb]
+    return np.clip(res_img, 0.0, 1.0).astype(np.double)
