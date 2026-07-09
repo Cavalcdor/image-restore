@@ -1,0 +1,143 @@
+{
+  "size": 4,
+  "image_size": [
+    150,
+    150
+  ],
+  "ratios": [
+    [
+      0.8,
+      0.4,
+      0.6
+    ],
+    [
+      0.4,
+      0.6,
+      0.8
+    ]
+  ],
+  "seeds": [
+    7,
+    42,
+    2026
+  ],
+  "methods": [
+    "degraded",
+    "telea_only",
+    "local_mean_only",
+    "linear_ridge_main",
+    "quadratic_gaussian_main_modify",
+    "adaptive_rgb_no_ycrcb",
+    "fixed_window_ycrcb",
+    "full_adaptive_ycrcb"
+  ],
+  "method_configs": {
+    "degraded": "no restoration baseline",
+    "telea_only": "cv2 Telea inpainting only",
+    "local_mean_only": "box-filtered local mean only",
+    "linear_ridge_main": "main.py linear ridge regression [dx, dy, 1]",
+    "quadratic_gaussian_main_modify": "main_modify.py gaussian weighted quadratic ridge",
+    "adaptive_rgb_no_ycrcb": "main_modify_2.py adaptive RGB restoration, YCrCb disabled",
+    "fixed_window_ycrcb": "main_modify_2.py fixed small window, YCrCb chroma correction enabled",
+    "full_adaptive_ycrcb": "main_modify_2.py adaptive window and YCrCb chroma correction enabled"
+  },
+  "cases": [
+    {
+      "case_id": "A_ratio_08_04_06_seed_7",
+      "source": "A.png",
+      "noise_ratio": [
+        0.8,
+        0.4,
+        0.6
+      ],
+      "seed": 7,
+      "generated_noise": true
+    },
+    {
+      "case_id": "A_ratio_08_04_06_seed_42",
+      "source": "A.png",
+      "noise_ratio": [
+        0.8,
+        0.4,
+        0.6
+      ],
+      "seed": 42,
+      "generated_noise": true
+    },
+    {
+      "case_id": "A_ratio_08_04_06_seed_2026",
+      "source": "A.png",
+      "noise_ratio": [
+        0.8,
+        0.4,
+        0.6
+      ],
+      "seed": 2026,
+      "generated_noise": true
+    },
+    {
+      "case_id": "A_ratio_04_06_08_seed_7",
+      "source": "A.png",
+      "noise_ratio": [
+        0.4,
+        0.6,
+        0.8
+      ],
+      "seed": 7,
+      "generated_noise": true
+    },
+    {
+      "case_id": "A_ratio_04_06_08_seed_42",
+      "source": "A.png",
+      "noise_ratio": [
+        0.4,
+        0.6,
+        0.8
+      ],
+      "seed": 42,
+      "generated_noise": true
+    },
+    {
+      "case_id": "A_ratio_04_06_08_seed_2026",
+      "source": "A.png",
+      "noise_ratio": [
+        0.4,
+        0.6,
+        0.8
+      ],
+      "seed": 2026,
+      "generated_noise": true
+    },
+    {
+      "case_id": "sample_forest",
+      "source": "forest.png",
+      "noise_source": "forest_random_noise.png",
+      "generated_noise": false
+    },
+    {
+      "case_id": "sample_mona_lisa",
+      "source": "mona_lisa.png",
+      "noise_source": "mona_lisa_random_noise.png",
+      "generated_noise": false
+    },
+    {
+      "case_id": "sample_potala_palace",
+      "source": "potala_palace.png",
+      "noise_source": "potala_palace_random_noise.png",
+      "generated_noise": false
+    },
+    {
+      "case_id": "sample_the_school_of_athens",
+      "source": "the_school_of_athens.png",
+      "noise_source": "the_school_of_athens_random_noise.png",
+      "generated_noise": false
+    },
+    {
+      "case_id": "sample_xihu",
+      "source": "xihu.png",
+      "noise_source": "xihu_random_noise.png",
+      "generated_noise": false
+    }
+  ],
+  "output_dir": "C:\\Users\\dongj\\Desktop\\大数据短学期\\Proj\\results\\ablation\\20260709_155014"
+}

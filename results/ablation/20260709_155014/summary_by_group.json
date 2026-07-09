@@ -1,0 +1,102 @@
+{
+  "generated_mask_noise": {
+    "degraded": {
+      "mean_l2": 145.087544809611,
+      "mean_ssim": 0.04941341776293087,
+      "mean_cosine": 0.6330867279629717,
+      "mean_runtime_sec": 1.9533333518969204e-05
+    },
+    "telea_only": {
+      "mean_l2": 15.443522264195828,
+      "mean_ssim": 0.8174595927490923,
+      "mean_cosine": 0.9966016855036042,
+      "mean_runtime_sec": 0.021558766666203155
+    },
+    "local_mean_only": {
+      "mean_l2": 18.51137739004121,
+      "mean_ssim": 0.7525055131407489,
+      "mean_cosine": 0.9951144760529441,
+      "mean_runtime_sec": 0.0012734499996440718
+    },
+    "linear_ridge_main": {
+      "mean_l2": 10.878446321449951,
+      "mean_ssim": 0.8975842338041603,
+      "mean_cosine": 0.9983148544094659,
+      "mean_runtime_sec": 0.2235460833326215
+    },
+    "quadratic_gaussian_main_modify": {
+      "mean_l2": 13.402564190590404,
+      "mean_ssim": 0.854334311890414,
+      "mean_cosine": 0.9974413563275156,
+      "mean_runtime_sec": 0.08005373333314007
+    },
+    "adaptive_rgb_no_ycrcb": {
+      "mean_l2": 14.591405047017519,
+      "mean_ssim": 0.793375487309728,
+      "mean_cosine": 0.9969687437531922,
+      "mean_runtime_sec": 0.1442976833332068
+    },
+    "fixed_window_ycrcb": {
+      "mean_l2": 10.878446321449951,
+      "mean_ssim": 0.8975842338041603,
+      "mean_cosine": 0.9983148544094659,
+      "mean_runtime_sec": 0.2421136833327182
+    },
+    "full_adaptive_ycrcb": {
+      "mean_l2": 11.713744815166754,
+      "mean_ssim": 0.8594129902241988,
+      "mean_cosine": 0.9980473590345668,
+      "mean_runtime_sec": 0.2616318166668255
+    }
+  },
+  "sample_random_noise": {
+    "degraded": {
+      "mean_l2": 78.16246464697113,
+      "mean_ssim": 0.3252108616892276,
+      "mean_cosine": 0.937950350820571,
+      "mean_runtime_sec": 2.0699999004136772e-05
+    },
+    "telea_only": {
+      "mean_l2": 77.92734559967795,
+      "mean_ssim": 0.3270122962616087,
+      "mean_cosine": 0.9396465677277875,
+      "mean_runtime_sec": 0.0014477400000032503
+    },
+    "local_mean_only": {
+      "mean_l2": 77.92325065504849,
+      "mean_ssim": 0.3267697044957363,
+      "mean_cosine": 0.9396523567502157,
+      "mean_runtime_sec": 0.00047010000125737863
+    },
+    "linear_ridge_main": {
+      "mean_l2": 77.9201998146676,
+      "mean_ssim": 0.323932212146707,
+      "mean_cosine": 0.9396105445257701,
+      "mean_runtime_sec": 0.04587166000055731
+    },
+    "quadratic_gaussian_main_modify": {
+      "mean_l2": 77.92348026855913,
+      "mean_ssim": 0.32711870755910966,
+      "mean_cosine": 0.9396662064559121,
+      "mean_runtime_sec": 0.020028680000541497
+    },
+    "adaptive_rgb_no_ycrcb": {
+      "mean_l2": 77.92280454429911,
+      "mean_ssim": 0.326830961489544,
+      "mean_cosine": 0.9396653605043748,
+      "mean_runtime_sec": 0.0567334799998207
+    },
+    "fixed_window_ycrcb": {
+      "mean_l2": 77.9201998146676,
+      "mean_ssim": 0.323932212146707,
+      "mean_cosine": 0.9396105445257701,
+      "mean_runtime_sec": 0.04799841999993078
+    },
+    "full_adaptive_ycrcb": {
+      "mean_l2": 77.91901548137659,
+      "mean_ssim": 0.3238276883947727,
+      "mean_cosine": 0.9396178809723283,
+      "mean_runtime_sec": 0.10582568000027096
+    }
+  }
+}

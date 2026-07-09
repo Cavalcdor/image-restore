@@ -7,4 +7,5 @@
 /.local/
 /datasets/
 /.ipynb_checkpoints/
+/.vscode/
 core.*

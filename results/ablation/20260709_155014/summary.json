@@ -1,0 +1,50 @@
+{
+  "degraded": {
+    "mean_l2": 114.66705382659288,
+    "mean_ssim": 0.1747758922748839,
+    "mean_cosine": 0.7716611019891532,
+    "mean_runtime_sec": 2.006363601222719e-05
+  },
+  "telea_only": {
+    "mean_l2": 43.84526014396043,
+    "mean_ssim": 0.5945290034365998,
+    "mean_cosine": 0.9707129956055058,
+    "mean_runtime_sec": 0.012417390908839561
+  },
+  "local_mean_only": {
+    "mean_l2": 45.51677432868089,
+    "mean_ssim": 0.5589892364839251,
+    "mean_cosine": 0.9699044218244312,
+    "mean_runtime_sec": 0.0009082909094683022
+  },
+  "linear_ridge_main": {
+    "mean_l2": 41.35197063654888,
+    "mean_ssim": 0.6368333148689542,
+    "mean_cosine": 0.9716310771896041,
+    "mean_runtime_sec": 0.14278498181804686
+  },
+  "quadratic_gaussian_main_modify": {
+    "mean_l2": 42.73025331693983,
+    "mean_ssim": 0.6146908553761848,
+    "mean_cosine": 0.9711799245676958,
+    "mean_runtime_sec": 0.052769618181958904
+  },
+  "adaptive_rgb_no_ycrcb": {
+    "mean_l2": 43.378404818509146,
+    "mean_ssim": 0.581309793755099,
+    "mean_cosine": 0.9709217513673661,
+    "mean_runtime_sec": 0.10449577272712221
+  },
+  "fixed_window_ycrcb": {
+    "mean_l2": 41.35197063654888,
+    "mean_ssim": 0.6368333148689542,
+    "mean_cosine": 0.9716310771896041,
+    "mean_runtime_sec": 0.15387947272690575
+  },
+  "full_adaptive_ycrcb": {
+    "mean_l2": 41.80704966344395,
+    "mean_ssim": 0.6159651257562779,
+    "mean_cosine": 0.971488505369913,
+    "mean_runtime_sec": 0.19081084545475527
+  }
+}
