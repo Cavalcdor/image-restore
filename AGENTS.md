@@ -7,8 +7,8 @@
   - `get_noise_mask(noise_img)`
   - `restore_image(noise_img, size=4)`
 - Outputs must remain `np.double`, same shape as input, values clipped to `[0, 1]`.
-- Use the conda `torch` environment for validation:
-  - `C:\Users\dongj\.conda\envs\torch\python.exe ...`
+- Use `D:\MyHub\env` for validation:
+  - `D:\MyHub\env\Scripts\python.exe ...`
 
 ## Current Best Submission
 - `main.py` is the current best platform submission file.
@@ -48,9 +48,9 @@
 
 ## Useful Commands
 - Syntax check:
-  - `C:\Users\dongj\.conda\envs\torch\python.exe -m py_compile main.py`
+  - `D:\MyHub\MyProject(Gitted)\cv-ml-env\Scripts\python.exe -m py_compile main.py`
 - Run ablation:
-  - `C:\Users\dongj\.conda\envs\torch\python.exe run_ablation.py`
+  - `D:\MyHub\MyProject(Gitted)\cv-ml-env\Scripts\python.exe run_ablation.py`
 - Check git state:
   - `git status --short`
 

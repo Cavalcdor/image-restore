@@ -9,3 +9,9 @@
 /.ipynb_checkpoints/
 /.vscode/
 core.*
+
+# 本地虚拟环境（统一放在 D:\MyHub\env，已超出仓库范围）
+
+# 结果输出（可重新生成）
+/results/ablation/
+

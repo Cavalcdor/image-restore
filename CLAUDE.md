@@ -14,11 +14,11 @@ restore_image(noise_img, size=4)
 Keep the signatures unchanged. Return arrays should preserve input shape, use `np.double`, and stay in `[0, 1]`.
 
 ## Environment
-Use the Windows conda `torch` environment:
+Use the local `env` at `D:\MyHub\env`:
 
 ```powershell
-C:\Users\dongj\.conda\envs\torch\python.exe -m py_compile main.py
-C:\Users\dongj\.conda\envs\torch\python.exe run_ablation.py
+D:\MyHub\env\Scripts\python.exe -m py_compile main.py
+D:\MyHub\env\Scripts\python.exe run_ablation.py
 ```
 
 Avoid adding dependencies that are not already available. In particular, do not require `skimage` for submission code.
@@ -88,8 +88,12 @@ Known unrelated local state at context capture time:
 Do not stage, revert, or delete those unless explicitly asked.
 
 ## Working Rules
-- Use `rg` for searching.
-- Use `apply_patch` for file edits.
-- Use the torch environment for checks.
+- Use `grep_search` or `file_search` for searching.
+- Use `replace_string_in_file` / `multi_replace_string_in_file` for edits.
+- Use `D:\MyHub\env` for validation:
+  ```powershell
+  D:\MyHub\env\Scripts\python.exe -m py_compile main.py
+  D:\MyHub\env\Scripts\python.exe run_ablation.py
+  ```
 - Commit after important changes.
 - Do not commit generated ablation images unless the user explicitly requests it.
