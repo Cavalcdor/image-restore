@@ -2,6 +2,8 @@
 
 # Image Restore — 图像恢复重建
 
+![Python: 3.12+](https://img.shields.io/badge/Python-3.12%2B-3776AB?style=flat-square) ![Library: OpenCV / NumPy](https://img.shields.io/badge/Library-OpenCV%20%2F%20NumPy-5C3EE8?style=flat-square) ![Type: Course Project](https://img.shields.io/badge/Type-Course%20Project-64748B?style=flat-square)
+
 > 基于**局部加权岭回归**与**YCrCb 色度校正**的图像恢复算法。
 >
 > 人工智能与大数据综合实践课程项目

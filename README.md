@@ -2,6 +2,8 @@
 
 # Image Restore
 
+![Python: 3.12+](https://img.shields.io/badge/Python-3.12%2B-3776AB?style=flat-square) ![Library: OpenCV / NumPy](https://img.shields.io/badge/Library-OpenCV%20%2F%20NumPy-5C3EE8?style=flat-square) ![Type: Course Project](https://img.shields.io/badge/Type-Course%20Project-64748B?style=flat-square)
+
 Image restoration using **locally weighted ridge regression** and **YCrCb chroma correction**, developed for an Artificial Intelligence and Big Data practice course.
 
 ## Overview
