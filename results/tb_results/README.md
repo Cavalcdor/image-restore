@@ -1,3 +1,5 @@
-如果你使用了 tensorboard，请把你的 tensorboard 相关文件保存在这个文件夹内
+[English](README.md) | [简体中文](README.zh-CN.md)
 
-Please store your tensorboard results here
+# TensorBoard Results
+
+Store TensorBoard-related experiment output in this directory.
