@@ -2,6 +2,8 @@
 
 # Image Restore
 
+[![License](https://img.shields.io/badge/License-See%20Rights%20Notice-64748B?style=flat-square)](LICENSE)
+
 ![Python: 3.12+](https://img.shields.io/badge/Python-3.12%2B-3776AB?style=flat-square) ![Library: OpenCV / NumPy](https://img.shields.io/badge/Library-OpenCV%20%2F%20NumPy-5C3EE8?style=flat-square) ![Type: Course Project](https://img.shields.io/badge/Type-Course%20Project-64748B?style=flat-square)
 
 Image restoration using **locally weighted ridge regression** and **YCrCb chroma correction**, developed for an Artificial Intelligence and Big Data practice course.
@@ -60,3 +62,7 @@ restore_image(noise_img, size=4)
 | `adaptive_rgb_no_ycrcb` | 14.59 | 0.7934 | 0.9970 |
 
 The fixed-window YCrCb variant is the best result in these experiments; the fully adaptive variant is not the final submission.
+
+## License and rights
+
+This fork has **no repository-wide open-source license**. See the [rights and licensing notice](LICENSE). Its [upstream repository](https://github.com/2301601594/Image-Restore) also had no repository-wide license when checked on 2026-11-13. This fork does not grant rights over upstream code, course materials, images or datasets. Original contributions retain their respective authors' rights unless separately licensed.

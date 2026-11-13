@@ -2,6 +2,8 @@
 
 # Image Restore — 图像恢复重建
 
+[![License](https://img.shields.io/badge/License-See%20Rights%20Notice-64748B?style=flat-square)](LICENSE)
+
 ![Python: 3.12+](https://img.shields.io/badge/Python-3.12%2B-3776AB?style=flat-square) ![Library: OpenCV / NumPy](https://img.shields.io/badge/Library-OpenCV%20%2F%20NumPy-5C3EE8?style=flat-square) ![Type: Course Project](https://img.shields.io/badge/Type-Course%20Project-64748B?style=flat-square)
 
 > 基于**局部加权岭回归**与**YCrCb 色度校正**的图像恢复算法。
@@ -76,3 +78,7 @@ restore_image(noise_img, size=4)
 - `opencv-python`
 
 > 环境配置详见 `D:\MyHub\env\README.md`
+
+## 许可与权利范围
+
+本 fork **不提供覆盖全仓库的开源许可**，详见[权利与许可状态说明](LICENSE)。截至 2026-11-13 核查，[上游仓库](https://github.com/2301601594/Image-Restore)也未提供覆盖全仓库的许可证。本仓库不擅自授予上游代码、课程资料、图像或数据集的权利；原创修改由各自作者保留权利，除非另有明确许可。
